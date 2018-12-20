@@ -84,4 +84,8 @@ public class UserService {
         }
         throw new ValidationException("Cannot find user with name " + login);
     }
+
+    public String find(long id) {
+        return userRepository.find(id);
+    }
 }

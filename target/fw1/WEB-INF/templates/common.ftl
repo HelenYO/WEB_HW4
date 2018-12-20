@@ -17,9 +17,15 @@
         <a href="#"><img src="/img/ru.png" alt="In Russian" title="In Russian"/></a>
     </div>
     <div class="enter-or-register-box">
-        <a href="/enter">Enter</a>
-        |
-        <a href="/register">Register</a>
+        <#if username??>
+        ${username!}
+            |
+            <a href="/logout">Logout</a>
+        <#else>
+            <a href="/enter">Enter</a>
+            |
+            <a href="/register">Register</a>
+        </#if>
     </div>
     <nav>
         <ul>
@@ -30,6 +36,9 @@
             <li><a href="/problemset">Problemset</a></li>
             <li><a href="/groups">Groups</a></li>
             <li><a href="/rating">Rating</a></li>
+            <#if username??>
+                <li><a href="/addnews">Add news</a></li>
+            </#if>
         </ul>
     </nav>
 </header>

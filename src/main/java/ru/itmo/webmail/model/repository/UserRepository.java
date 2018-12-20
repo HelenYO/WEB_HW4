@@ -10,4 +10,5 @@ public interface UserRepository {
     User findByEmail(String email);
     List<User> findAll();
     long findCount();
+    String find(long id);
 }

@@ -36,6 +36,9 @@
             <li><a href="/problemset">Problemset</a></li>
             <li><a href="/groups">Groups</a></li>
             <li><a href="/rating">Rating</a></li>
+            <#if username??>
+                <li><a href="/addnews">Add news</a></li>
+            </#if>
         </ul>
     </nav>
 </header>
@@ -53,6 +56,24 @@
                 <a href="#">View all</a>
             </div>
         </section>
+        <#if allNews??>
+            <section>
+                <div class="header">
+                    News
+                </div>
+                <#list allNews as news>
+                    <div class="username">
+                    ${news.user!}
+                    </div>
+                    <div class="body">
+                    ${news.text!}
+                    </div>
+                </#list>
+                <div class="footer">
+                    <a href="#">View all</a>
+                </div>
+            </section>
+        </#if>
     </aside>
     <main>
         <#nested/>

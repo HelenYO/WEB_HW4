@@ -16,6 +16,10 @@ public class IndexPage extends Page {
 //        view.put("message", "You have been registered");
 //    }
 
+    private void newsAdded(Map<String, Object> view) {
+        view.put("message", "Your news have been added");
+    }
+
     private void registrationDone( Map<String, Object> view) {
         view.put("message", "You have been registered");
     }
