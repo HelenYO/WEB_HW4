@@ -20,4 +20,12 @@ public class IndexPage extends Page {
         view.put("message", "You have been registered");
     }
 
+    private void loginSuccess(Map<String, Object> view) {
+        view.put("message", "Logged in successfully");
+    }
+
+    private void logoutSuccess(Map<String, Object> view) {
+        view.put("message", "See you soon");
+    }
+
 }

@@ -67,4 +67,21 @@ public class UserService {
     public long findCount() {
         return userRepository.findCount();
     }
+
+    public User validateUser(User user, String password) throws ValidationException {
+        String login = user.getLogin();
+        String passwordSha = Hashing.sha256().hashString(USER_PASSWORD_SALT + password,
+                StandardCharsets.UTF_8).toString();
+        List<User> users = findAll();
+        for (User u : users) {
+            if (u.getLogin().equals(login)) {
+                if (passwordSha.equals(u.getPasswordSha1())) {
+                    return u;
+                } else {
+                    throw new ValidationException("Incorrect password");
+                }
+            }
+        }
+        throw new ValidationException("Cannot find user with name " + login);
+    }
 }

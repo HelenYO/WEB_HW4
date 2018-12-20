@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class FrontServlet extends HttpServlet {
     private static final String BASE_PAGE_NAME = FrontServlet.class.getName().substring(0,
@@ -120,39 +117,33 @@ public class FrontServlet extends HttpServlet {
     void resolveMethod(Route route, HttpServletRequest request, HttpServletResponse response,
                        Class<?> clazz, String methodName, Object page,
                        Map<String, Object> view) throws NotFoundException, IOException, ServletException {
+
         Method method = null;
-        for (Class<?> c = clazz;c != null; c = c.getSuperclass()) {
-//            try {
-//                method = c.getDeclaredMethod(route.getAction(), HttpServletRequest.class, Map.class);
-//            } catch (NoSuchMethodException e) {
-//                // No operations.
-//            }
-            Optional<Method> candidate = Arrays.stream(c.getDeclaredMethods()).filter(method_temp -> method_temp.getName().equals(methodName)).findFirst();
-            if (candidate.isPresent()) {
-                //return candidate.get();
-                method = candidate.get();
+        for (Class<?> c = clazz; method == null && c != null; c = c.getSuperclass()) {
+            Method[] methods = c.getDeclaredMethods();
+            for (Method m : methods) {
+                if (m.getName().equals(methodName)) {
+                    method = m;
+                }
             }
         }
         if (method == null) {
             throw new NotFoundException();
         }
-
         try {
             method.setAccessible(true);
-            Class<?>[] types = method.getParameterTypes();
-            //System.out.println("     SEE  " + types.length + "  \n");
-            if (types.length == 1) {
-                if (request.getClass().isInstance(types[0])) {
-                    method.invoke(page, request);
+            Class[] needParams = method.getParameterTypes();
+            List params = new ArrayList<Class>();
+            for (Class c : needParams) {
+                if (c == HttpServletRequest.class) {
+                    params.add(request);
+                } else if (c == Map.class) {
+                    params.add(view);
                 } else {
-                    method.invoke(page, view);
+                    throw new NotFoundException();
                 }
-            } else if (types.length == 0) {
-                method.invoke(page);
-            } else {
-                method.invoke(page, request, view);
             }
-            //method.invoke(page, request, view);
+            method.invoke(page, params.toArray());
         } catch (InvocationTargetException e) {
             Throwable throwable = e.getTargetException();
             if (throwable instanceof RedirectException) {
