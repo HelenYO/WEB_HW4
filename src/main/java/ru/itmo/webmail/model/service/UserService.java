@@ -11,6 +11,7 @@ import java.util.List;
 
 public class UserService {
     private static final String USER_PASSWORD_SALT = "dc3475f2b301851b";
+    private static long id = 0;
 
     private UserRepository userRepository = new UserRepositoryImpl();
 
@@ -51,14 +52,19 @@ public class UserService {
         }
     }
 
-    public void register(User user, String password, long currId) {
+    public void register(User user, String password) {
         user.setPasswordSha1(Hashing.sha256().hashString(USER_PASSWORD_SALT + password,
                 StandardCharsets.UTF_8).toString());
-        user.setId(currId);
+        user.setId(id++);
         userRepository.save(user);
     }
 
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+
+    public long findCount() {
+        return userRepository.findCount();
     }
 }

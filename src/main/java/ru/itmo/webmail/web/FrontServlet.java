@@ -91,22 +91,7 @@ public class FrontServlet extends HttpServlet {
 
     private void processRoute(Route route, HttpServletRequest request, HttpServletResponse response) throws NotFoundException, ServletException, IOException {
         Class<?> clazz = route.newClass();
-        Method method = null;
-        for (Class<?> c = clazz;c != null; c = c.getSuperclass()) {
-//            try {
-//                method = c.getDeclaredMethod(route.getAction(), HttpServletRequest.class, Map.class);
-//            } catch (NoSuchMethodException e) {
-//                // No operations.
-//            }
-            Optional<Method> candidate = Arrays.stream(c.getDeclaredMethods()).filter(method_temp -> method_temp.getName().equals(route.getAction())).findFirst();
-            if (candidate.isPresent()) {
-                //return candidate.get();
-                method = candidate.get();
-            }
-        }
-        if (method == null) {
-            throw new NotFoundException();
-        }
+
 
         Object page;
         try {
@@ -116,6 +101,42 @@ public class FrontServlet extends HttpServlet {
         }
 
         Map<String, Object> view = new HashMap<>();
+
+        resolveMethod(route, request, response, clazz, "before", page, view);
+        resolveMethod(route, request, response, clazz, route.getAction(), page, view);
+        resolveMethod(route, request, response, clazz, "after", page, view);
+
+        try {
+            Template template = newTemplate(clazz.getSimpleName() + ".ftlh");
+            response.setContentType("text/html");
+            PrintWriter writer = response.getWriter();
+            template.process(view, writer);
+            writer.flush();
+        } catch (TemplateException e) {
+            throw new ServletException(e);
+        }
+    }
+
+    void resolveMethod(Route route, HttpServletRequest request, HttpServletResponse response,
+                       Class<?> clazz, String methodName, Object page,
+                       Map<String, Object> view) throws NotFoundException, IOException, ServletException {
+        Method method = null;
+        for (Class<?> c = clazz;c != null; c = c.getSuperclass()) {
+//            try {
+//                method = c.getDeclaredMethod(route.getAction(), HttpServletRequest.class, Map.class);
+//            } catch (NoSuchMethodException e) {
+//                // No operations.
+//            }
+            Optional<Method> candidate = Arrays.stream(c.getDeclaredMethods()).filter(method_temp -> method_temp.getName().equals(methodName)).findFirst();
+            if (candidate.isPresent()) {
+                //return candidate.get();
+                method = candidate.get();
+            }
+        }
+        if (method == null) {
+            throw new NotFoundException();
+        }
+
         try {
             method.setAccessible(true);
             Class<?>[] types = method.getParameterTypes();
@@ -147,16 +168,6 @@ public class FrontServlet extends HttpServlet {
             throw new ServletException("Can't run page method [clazz=" + clazz + ", method=" + method + "].", e);
         } catch (Exception e) {
             throw new ServletException("Can't run page method [clazz=" + clazz + ", method=" + method + "].", e);
-        }
-
-        try {
-            Template template = newTemplate(clazz.getSimpleName() + ".ftlh");
-            response.setContentType("text/html");
-            PrintWriter writer = response.getWriter();
-            template.process(view, writer);
-            writer.flush();
-        } catch (TemplateException e) {
-            throw new ServletException(e);
         }
     }
 

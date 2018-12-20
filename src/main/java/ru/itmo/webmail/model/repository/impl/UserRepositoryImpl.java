@@ -12,12 +12,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     private List<User> users;
 
-    private static int userCount = 0;
+    //private static int userCount = 0;
 
-    @Override
-    public int findCount() {
-        return userCount;
-    }
+//    @Override
+//    public int findCount() {
+//        return userCount;
+//    }
 
     public UserRepositoryImpl() {
         try {
@@ -32,7 +32,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void save(User user) {
         users.add(user);
-        userCount++;
+        //userCount++;
 
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(
@@ -57,5 +57,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> findAll() {
         return new ArrayList<>(users);
+    }
+
+
+    @Override
+    public long findCount() {
+        return users.size();
     }
 }

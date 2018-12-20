@@ -53,7 +53,9 @@
     </main>
 </div>
 <footer>
-    <a href="#">Codeforces</a> &copy; 2010-2018 by Mike Mirzayanov   kolvo: ${text!}
+    <a href="#">Codeforces</a> &copy; 2010-2018 by Mike Mirzayanov
+<#--${text!}-->
+    <p>Registered: ${userCount!} </p>
 </footer>
 </body>
 </html>

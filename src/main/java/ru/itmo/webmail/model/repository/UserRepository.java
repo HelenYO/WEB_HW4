@@ -9,5 +9,5 @@ public interface UserRepository {
     User findByLogin(String login);
     User findByEmail(String email);
     List<User> findAll();
-    int findCount();
+    long findCount();
 }

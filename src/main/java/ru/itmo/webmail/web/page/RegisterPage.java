@@ -8,9 +8,9 @@ import ru.itmo.webmail.web.exception.RedirectException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-public class RegisterPage {
+public class RegisterPage extends Page{
     private UserService userService = new UserService();
-    static private long currId = 1;
+    //static private long currId = 1;
 
     private void register(HttpServletRequest request, Map<String, Object> view) {
         User user = new User();
@@ -30,7 +30,7 @@ public class RegisterPage {
             return;
         }
 
-        userService.register(user, password, currId++);
+        userService.register(user, password);
         throw new RedirectException("/index", "registrationDone");
     }
 
